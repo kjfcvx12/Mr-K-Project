@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+    td:first-child {
+        width: 120px;       /* 고정 너비 설정 */
+        text-align: center;   /* 가운데 정렬 */
+    }
+</style>
+</head>
+<body>
+    <table>
+        <h1>문제는 자동으로 생성되며, 10초가 지나면 자동 채점</h1>
+        <h2>남은시간 <span id="clock"></span></h2>
+        <hr>    
+    
+
+    </table>
+    <button>다시</button> 정답 : <span id="count"></span>
+    <!--
+    테이블 생성
+    h1 제목 생성
+    h2 제목 생성->span id clock 지정->남은시간표시위치
+    hr 구분선
+    
+    버튼 생성->정답 개수 표시용 span id count 지정
+    -->
+    <script>
+    //랜덤출력
+    let sy=['+','-','*','/'];                               //num1 숫자1, num2 숫자2, cal1 사칙연산 확인숫자, cal2 사칙연산 
+    let table=document.querySelector('table');              //table 변수에 테이블 태그 선택
+
+    for(let i=1;i<=4;i++){  //반복문 식 4번 출력
+      let num1=Math.floor((Math.random()*100)+1);           //num1에 랜덤숫자 1-100
+      let num2=Math.floor((Math.random()*100)+1);           //num2에 랜덤숫자 1-100
+      let sy1=Math.floor((Math.random()*4));                //sy1에 랜덤숫자 4개, 사칙연산
+
+      let tr=document.createElement('tr');                  //tr변수 tr태그 생성. tr 가로줄
+      let td1=document.createElement('td');                 //td1 변수 td태그 생성. 식 출력용. 일반 데이터칸
+      let td2=document.createElement('td');                 //td2 변수 td태그 생성. input 출력용
+      let input=document.createElement('input');            //input 변수 input태그 생성
+
+      table.appendChild(tr);                                //테이블에 가로줄 추가
+      tr.appendChild(td1);                                  //tr에 td1 추가
+      tr.appendChild(td2);                                  //tr에 td2 추가
+      td1.innerHTML=num1+sy[sy1]+num2;                      //td1에 계산식 추가
+      td2.appendChild(input);                               //td2에 input 추가
+      td1.setAttribute('id','tdid');                        //td1에 속성추가. id 이름 tdid
+      input.setAttribute('type','text');                    //input에 속성추가 type text
+    }
+    //랜덤출력
+   
+    //남은시간
+    let st=document.getElementById('clock');                //시간표시용 id clock 선택
+    let t=10;                                               //남은시간 10초
+    st.innerText=t;
+
+    function time(){
+        cal();
+        if(t>=0){                                           //시간이 0보다 크면 실행
+            st.innerHTML=t;                                 //시간변경
+            t--;                                            //시간 감소
+        }
+    }
+
+    function cal(){
+      //계산
+        let tdid=document.querySelectorAll('#tdid');        //위의 반복문에서 td1에 추가한 tdid 선택
+        let input1=document.querySelectorAll('input');      //위의 반복문에서 추가한 input 선택
+        let ct=document.getElementById('count');            //정답갯수 표시용 count 선택
+        let ctn=input1.length;                              //정답갯수 ctn
+
+        for(let i=0;i<input1.length;i++){                   //input개수 반복
+            let ans=eval(tdid[i].innerHTML);                //변수 ans에 td1의 값 eval로 계산
+            let ans2=Number(input1[i].value);               //변수 ans2에 입력한 값을 Number로 숫자로 변형
+
+            if(tdid[i].innerHTML.match('/')){               //식에 /가 있으면 소수점 2자리 수까지 표시
+                ans=ans.toFixed(2);
+                ans2=ans2.toFixed(2);
+            }
+
+            if(ans!=ans2&&t==0){                            //계산한 값과 입력값이 맞는지 그리고 시간이 0인지
+                input1[i].value=ans;                        //오답일 경우 계산값 입력
+                input1[i].style.color='red';                //오답에 red
+                tdid[i].style.textDecoration='line-through';//오답문제에 취소선
+                ctn--;                                      //정답갯수 차감
+            }
+            
+            if(t==0){                                       //시간이 0이면
+                ct.innerText=ctn+'개';                      //정답갯수 출력
+            }
+        }
+        //계산
+    }
+
+    setInterval(time,1000);                                 //1초마다 time함수 실행
+    
+    setTimeout(() => {                                      //setInterval 10초 후 종료
+        clearInterval(time);
+        console.log("반복 종료");
+    }, 10000);
+    
+    //남은시간
+
+    //다시 버튼
+    let bt=document.querySelector('button');                //button선택
+
+    bt.addEventListener('click',()=>{                       //버튼 클릭시 새로고침
+      location.reload();
+    });
+    </script>
+</body>
+</html>
